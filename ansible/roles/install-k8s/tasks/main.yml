@@ -1,0 +1,8 @@
+---
+# tasks file for install-k8s
+- include: sudo.yml
+- include: static_ip.yml
+- include: set_sshkey.yml
+- include: docker.yml
+- include: k8s.yml
+#- include: bash_completion.yml

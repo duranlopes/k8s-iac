@@ -1,0 +1,61 @@
+- name: Reset Cluster
+  command:
+    kubeadm reset --force
+  register: kubeadmin_init
+
+- name: update k8s api images
+  command: kubeadm config images pull
+  become: true
+#  become_method: sudo
+#  become_user: root
+
+- name: Initialize Kubernetes master with kubeadm init.
+  command:
+    kubeadm init
+  register: kubeadmin_init
+  become: true
+  become_method: sudo
+  become_user: root
+
+- name: Ensure .kube directory exists.
+  file:
+    path: ~/.k8s
+    state: directory
+
+- name: Setup kubeconfig
+  command: "{{ item }}"
+  with_items:
+   - mkdir -p /home/{{ ansible_ssh_user }}/.kube
+   - cp /etc/kubernetes/admin.conf /home/{{ ansible_ssh_user }}/.kube/config
+   - chown {{ ansible_ssh_user }}:{{ ansible_ssh_user }} /home/{{ ansible_ssh_user }}/.kube/config
+
+- name: Configure weavenet networking.
+  shell: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+  register: weavenet_result
+  become: true
+  become_method: sudo
+  become_user: '{{ ansible_ssh_user }}'
+
+- name: "Cluster token"
+  shell: kubeadm token list | cut -d ' ' -f1 | sed -n '2p'
+
+  register: K8S_TOKEN
+- name: "CA Hash"
+  shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+  register: K8S_MASTER_CA_HASH
+
+- name: "Add K8S Token and Hash to dummy host"
+  add_host:
+    name:   "K8S_TOKEN_HOLDER"
+    token:  "{{ K8S_TOKEN.stdout }}"
+    hash:   "{{ K8S_MASTER_CA_HASH.stdout }}"
+
+- name: show token
+  debug:
+    msg: "[Master] K8S_TOKEN_HOLDER K8S token is {{ hostvars['K8S_TOKEN_HOLDER']['token'] }}"
+
+- name: show hash
+  debug:
+    msg: "[Master] K8S_TOKEN_HOLDER K8S Hash is  {{ hostvars['K8S_TOKEN_HOLDER']['hash'] }}"
+
+

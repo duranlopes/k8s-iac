@@ -1,0 +1,7 @@
+---
+- name: Set authorized key taken from file
+  authorized_key:
+    user: '{{ ansible_ssh_user }}'
+    state: present
+    #key: "{{ lookup('file', '/home/'{{ ansible_ssh_user }}'/.ssh/id_rsa.pub') }}"
+    key: "{{ lookup('file', '/home/duran/.ssh/id_rsa.pub') }}"
