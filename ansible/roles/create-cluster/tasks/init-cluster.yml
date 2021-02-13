@@ -14,8 +14,8 @@
     kubeadm init --ignore-preflight-errors=stringSlice
   register: kubeadmin_init
   become: true
-  become_method: sudo
-  become_user: root
+#  become_method: sudo
+#  become_user: root
 
 - name: Ensure .kube directory exists.
   file:

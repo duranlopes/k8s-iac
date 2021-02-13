@@ -3,13 +3,13 @@ variable "aws_ami" {
 }
 
 variable "instance_type_master" {
-  #default = "t2.micro"
-  default = "t2.medium"
+  default = "t2.micro"
+  #default = "t2.medium"
 }
 
 variable "instance_type_node" {
-  #default = "t2.micro"
-  default = "t2.medium"
+  default = "t2.micro"
+  #default = "t2.medium"
 }
 
 variable "instance_count_master" {
@@ -17,7 +17,7 @@ variable "instance_count_master" {
 }
 
 variable "instance_count_node" {
-  default = 1
+  default = 2
 }
 
 variable "aws_region" {
