@@ -1,8 +1,8 @@
 # Iac for creating a Kubernetes cluster using Aws Ec2
 
 
-Terraform 
----
+## Terraform 
+
 
 ### Main module
 
@@ -11,11 +11,9 @@ Terraform
 - key_pair
 - ec2 instances (master, node)
 
-Ansible
----
+## Ansible
 
 ### Install k8s
-
 
 - Install docker
 - Install kubernetes
