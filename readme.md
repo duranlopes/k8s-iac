@@ -1,10 +1,6 @@
-# Iac for creating a Kubernetes cluster using Aws Ec2
-
+# This IaC provides a cluster at Aws using EC2 instances. I used Terraform to provision Aws EC2 Instances and Ansible to configure linux servers and integrate the master with the nodes. 
 
 ## Terraform 
-
-
-### Main module
 
 - vpc
 - security group
