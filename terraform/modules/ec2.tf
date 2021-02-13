@@ -5,6 +5,7 @@ resource "aws_instance" "master" {
   ami           = var.aws_ami
   instance_type = var.instance_type_master
   key_name      = aws_key_pair.key_k8s.key_name
+  subnet_id     = aws_subnet.k8s_network.id
   tags = {
     Name = "master-${count.index}"
   }
@@ -16,6 +17,7 @@ resource "aws_instance" "node" {
   ami           = var.aws_ami
   instance_type = var.instance_type_node
   key_name      = aws_key_pair.key_k8s.key_name
+  subnet_id     = aws_subnet.k8s_network.id
   tags = {
     Name = "node-${count.index}"
   }

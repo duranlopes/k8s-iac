@@ -42,3 +42,12 @@ resource "aws_security_group" "security_k8s" {
     Name = "Security Group K8s"
   }
 }
+
+resource "aws_security_group_rule" "allow_all" {
+  type              = "ingress"
+  to_port           = 0
+  protocol          = "-1"
+  source_security_group_id   = aws_security_group.security_k8s.id
+  from_port         = 0
+  security_group_id = aws_security_group.security_k8s.id
+}

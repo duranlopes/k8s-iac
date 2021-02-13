@@ -3,11 +3,13 @@ variable "aws_ami" {
 }
 
 variable "instance_type_master" {
-  default = "t2.micro"
+  #default = "t2.micro"
+  default = "t2.medium"
 }
 
 variable "instance_type_node" {
-  default = "t2.micro"
+  #default = "t2.micro"
+  default = "t2.medium"
 }
 
 variable "instance_count_master" {
@@ -24,5 +26,14 @@ variable "aws_region" {
 
 variable "aws_key_path" {
   description = "key_path"
-  default     = "./key/id_rsa.pub"
+  #default     = "./key/id_rsa.pub"
+  default = "/home/duran/.ssh/id_rsa.pub"
+}
+
+variable "public_cidr_block" {
+  default = "10.0.0.0/16"
+}
+
+variable "availability_zone" {
+  default = "us-east-1a"
 }
