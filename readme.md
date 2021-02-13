@@ -9,6 +9,7 @@
 
 ## Ansible
 
+
 ### Install k8s
 
 - Install docker
@@ -26,3 +27,8 @@
 
 - Reset previous config
 - Join cluster
+
+### Helm
+
+- Install helm
+- Init helm

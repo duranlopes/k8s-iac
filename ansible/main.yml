@@ -21,9 +21,9 @@
   roles:
   - { role: join-workers,tags: ["join_workers_role"]}
 
-#- hosts: k8s-master
-#  become: yes
-#  user: ubuntu
-#
-#  roles:
-#  - { role: install-helm,tags: ["install_helm_role"]}
+- hosts: k8s-master
+  become: yes
+  user: ubuntu
+
+  roles:
+  - { role: install-helm,tags: ["install_helm_role"]}

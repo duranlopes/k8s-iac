@@ -1,23 +1,19 @@
-- name: Install helm via curl
-  shell: curl -fsSL https://git.io/get_helm.sh | bash -
-  register: helm_result
+- name: Get Helm apt-key
+  apt_key: 
+    url: https://baltocdn.com/helm/signing.asc
+    state: present
 
-- name: Helm init
-  shell: helm init
-  register: helm_init_result
+- name: Adding apt repository for Helm
+  apt_repository:
+    repo: deb https://baltocdn.com/helm/stable/debian/ all main
+    state: present
+    filename: helm.list
 
-- name: Create service account to tiller
-  shell: kubectl create serviceaccount tiller
-  register: tiller_result
-
-- name: Create clusterrolebinding for tiller
-  shell: kubectl create clusterrolebinding tiller-cluster-role --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
-  register: clusterrolebinding_result
-
-- name: Apply patch to tiller-deploy
-  shell: kubectl patch deployments -n kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
-  register: patch_result
-
-- name: Waiting tiller pod
-  pause:
-    minutes: '2'
+- name: Install helm packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - helm
