@@ -1,4 +1,3 @@
 ---
 # defaults file for create-cluster
 
-ansible_ssh_user: "ubuntu"

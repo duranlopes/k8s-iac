@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  db:
+    container_name: db
+    image: mysql:5.7
+    environment:
+    - MYSQL_ROOT_PASSWORD=7KAVTF745s56yryN
+    - MYSQL_USER=fastapi
+    - MYSQL_DATABASE=crud
+    - MYSQL_PASSWORD=7KAVTF745s56yryN
+    ports:
+      - "3306:3306"
+    volumes:
+      - ${PWD}/data/mysql:/var/lib/mysql:rw
+    networks:
+      - mysql-compose-network
+
+  adminer:
+    container_name: adminer
+    image: adminer
+    ports:
+      - 8080:8080
+    networks:
+      - mysql-compose-network
+
+  api:
+    container_name: api
+    image: duran750/k8s-iac:latest
+    ports:
+      - 8070:80
+    environment:
+      - DB_PASS=7KAVTF745s56yryN
+      - DB_SERVER=db
+      - DB_USER=fastapi
+    depends_on: 
+      - db
+    volumes:
+      - ${PWD}/sql_app:/app/sql_app
+    networks:
+      - mysql-compose-network
+
+networks: 
+  mysql-compose-network:
+    driver: bridge
+
+

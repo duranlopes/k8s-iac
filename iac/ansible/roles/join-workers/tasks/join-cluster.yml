@@ -11,8 +11,8 @@
     kubeadm reset --force
   register: kubeadm_reset_node
   become: true
-#  become_method: sudo
-#  become_user: root
+  become_method: sudo
+  become_user: root
 
 - name: "Kubeadm join"
   shell: 
@@ -20,6 +20,6 @@
     --discovery-token-ca-cert-hash sha256:{{ hostvars['K8S_TOKEN_HOLDER']['hash'] }}
     {{K8S_MASTER_NODE_IP}}:{{K8S_API_SECURE_PORT}}
   become: true
-#  become_method: sudo
-#  become_user: root
+  become_method: sudo
+  become_user: root
 
