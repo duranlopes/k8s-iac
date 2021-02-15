@@ -43,7 +43,7 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: terraform init #  -backend-config="access_key=AWS_ACCESS_KEY_ID" -backend-config="secret_key=AWS_SECRET_ACCESS_KEY"
+        run: terraform init
 
       - name: Terraform Validate
         id: validate
@@ -56,3 +56,6 @@ jobs:
   
       - name: Terraform Apply
         run: terraform apply -auto-approve -lock=false
+
+      - name: Terraform show
+        run: terraform show -no-color
