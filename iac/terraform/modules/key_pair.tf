@@ -1,6 +1,6 @@
 resource "aws_key_pair" "key_k8s" {
-  key_name   = "key_k8s"
+  key_name = "key_k8s"
   #public_key = file(var.aws_key_path)
-  public_key = "${var.SSH_KEY}"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDKXJPoRdx4rLTkyMPwl56yhVbEYy7aevXzRkO40O021ZDvTgl7IXFoFVcYYWVb8BWQ5cxdcqSXYImYF+ncUf4lCLn+3s8tS+s+YxFtgzHNIyFlN6W909Ql2qHbIibLa9aPph+l7NlPqJb/oZxgtF1x2Y+LnRgOqDDVVELdaJ3jAZzPG2hqL1n7fd3HAy/+hkbFskWaaCwenqgZF9ZW6RNo1vXIXe0tsNqocbt5mVCdDhu5/A48hn3+rp+gp1QitfzVtvqjdI748EwmkLNAtMGGBheliqJASn/bt+PHXaxbquRaAGlvjIivhyWW1DauV7r0p+Suq++GBPMWuWDyphQWXHTorocfpoyMze+wj3JERWz68jCbQTKQEteBLhDEgbNFqtA+m4vvoTbkFRnVlBPl+9/c/dmHB0BRagIE7IheOMbrP5s4ce2LIwgTMzMty1lXi3O3m5bLhiVysMBsD35IQpJ3AMuVRCCIYRk4SoRgvyjpJ3bT+XJ2MuUeiI8PLGk= duran@1LW1R23"
 }
 
