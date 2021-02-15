@@ -1,24 +1,24 @@
-- hosts: all
-  become: yes
-  user: ubuntu
-  gather_facts: yes
-  roles:
-    - { role: install-k8s, tags: ["install_k8s_role"] }
-
-- hosts: k8s-master
-  become: yes
-  become_method: sudo
-  become_user: root
-  user: ubuntu
-  roles:
-    - { role: create-cluster, tags: ["create_cluster_role"] }
-
-- hosts: k8s-workers
-  become: yes
-  become_method: sudo
-  become_user: ubuntu
-  roles:
-    - { role: join-workers, tags: ["join_workers_role"] }
+#- hosts: all
+#  become: yes
+#  user: ubuntu
+#  gather_facts: yes
+#  roles:
+#    - { role: install-k8s, tags: ["install_k8s_role"] }
+#
+#- hosts: k8s-master
+#  become: yes
+#  become_method: sudo
+#  become_user: root
+#  user: ubuntu
+#  roles:
+#    - { role: create-cluster, tags: ["create_cluster_role"] }
+#
+#- hosts: k8s-workers
+#  become: yes
+#  become_method: sudo
+#  become_user: ubuntu
+#  roles:
+#    - { role: join-workers, tags: ["join_workers_role"] }
 
 - hosts: k8s-master
   become: yes

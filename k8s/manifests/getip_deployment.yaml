@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: getip-deployment
+  labels:
+    app: getip
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: getip
+  template:
+    metadata:
+      labels:
+        app: getip
+    spec:
+      containers:
+        - name: getip
+          image: duran750/getvalidip
+          ports:
+            - containerPort: 8000
+          resources:
+            limits:
+              cpu: 500m
+            requests:
+              cpu: 300m
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: getip-svc
+spec:
+  type: NodePort
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30001
+  selector:
+    app: getip

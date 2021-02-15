@@ -15,11 +15,11 @@
   pause:
     seconds: "5"
 
-- name: Apply ingress controller
-  shell: kubectl apply -f /tmp/ingress_controller.yaml >> ingress_controller.log
-  args: 
-    chdir: $HOME
-    creates: ingress_controller.log
+#- name: Apply ingress controller
+#  shell: kubectl apply -f /tmp/ingress_controller.yaml >> ingress_controller.log
+#  args: 
+#    chdir: $HOME
+#    creates: ingress_controller.log
 
 - name: Pause for 5 minutes to build k8s cluster
   pause:
@@ -31,9 +31,3 @@
     chdir: $HOME
     creates: metric_server.log
 
-- name: Pause for 5 minutes to build k8s cluster
-  pause:
-    seconds: "10"
-    
-- name: Apply manifests
-  command: kubectl apply -f /home/{{ ansible_ssh_user }}/manifests/
