@@ -11,7 +11,7 @@
 
 - name: Initialize Kubernetes master with kubeadm init.
   command:
-    kubeadm init --ignore-preflight-errors=stringSlice
+    kubeadm init
   register: kubeadmin_init
   become: true
 #  become_method: sudo

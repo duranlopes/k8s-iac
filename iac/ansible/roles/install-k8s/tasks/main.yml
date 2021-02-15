@@ -1,6 +1,5 @@
 ---
 # tasks file for install-k8s
-#- include: sudo.yml
-#- include: set_sshkey.yml
+- include: baremetal.yml
 - include: docker.yml
 - include: k8s.yml

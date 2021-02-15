@@ -1,0 +1,43 @@
+- name: Set authorized key taken from file
+  authorized_key:
+    user: '{{ ansible_ssh_user }}'
+    state: present
+    #key: "{{ lookup('file', '/home/'{{ ansible_ssh_user }}'/.ssh/id_rsa.pub') }}"
+    key: "{{ lookup('file', '/home/duran/.ssh/id_rsa.pub') }}"
+
+- name: Make sure we have a 'wheel' group
+  group:
+    name: wheel
+    state: present
+
+- name: Allow 'wheel' group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%wheel'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+
+- name: Add sudoers users to wheel group
+  user:
+    name: "{{ ansible_ssh_user }}"
+    groups: [wheel,sudo]
+    append: yes
+    state: present
+
+- name: Remove file default netplan file
+  file:
+    path: /etc/netplan/00-installer-config.yaml
+    state: absent
+
+- name: Setando ip statico Ubuntu
+  template:
+    src: 50-cloud-init.j2
+    dest: /etc/netplan/50-cloud-init.yaml
+    force: yes
+    owner: root
+    group: root
+  when: ansible_distribution == 'Debian' or ansible_distribution== 'Ubuntu'
+
+- name: netplan
+  command: netplan apply

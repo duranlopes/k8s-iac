@@ -1,0 +1,12 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    {{ ansible_default_ipv4.alias }}:
+      dhcp4: no
+      addresses: [{{ ansible_default_ipv4.address }}/24]
+      gateway4: {{ ansible_default_ipv4.gateway }}
+      dhcp6: false
+      optional: true
+      nameservers:
+        addresses: [208.67.222.222, 1.1.1.1]

@@ -25,6 +25,13 @@ resource "aws_security_group" "security_k8s" {
   }
 
   ingress {
+    from_port   = "30000"
+    to_port     = "30000"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     description = "ping"
     from_port   = -1
     protocol    = "icmp"
