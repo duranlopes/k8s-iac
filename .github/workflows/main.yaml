@@ -16,7 +16,7 @@ jobs:
           path: ${{ github.workspace }}/iac/terraform
 
   deploy-infra:
-    name: Deploy Infra Dev
+    name: Deploy Infra
     runs-on: ubuntu-latest
 
     defaults:
@@ -26,10 +26,6 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #ARM_CLIENT_ID: ${{ secrets.TF_ARM_CLIENT_ID }}
-      #ARM_CLIENT_SECRET: ${{ secrets.TF_ARM_CLIENT_SECRET }}
-      #ARM_SUBSCRIPTION_ID: ${{ secrets.TF_ARM_SUBSCRIPTION_ID }}
-      #ARM_TENANT_ID: ${{ secrets.TF_ARM_TENNANT_ID }}
 
     needs: build
     steps:
@@ -46,7 +42,7 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: terraform init  -backend-config="access_key=AWS_ACCESS_KEY_ID" -backend-config="secret_key=AWS_SECRET_ACCESS_KEY"
+        run: terraform init #  -backend-config="access_key=AWS_ACCESS_KEY_ID" -backend-config="secret_key=AWS_SECRET_ACCESS_KEY"
 
       - name: Terraform Validate
         id: validate
