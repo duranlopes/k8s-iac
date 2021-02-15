@@ -1,5 +1,7 @@
 ---
 # tasks file for install-k8s
 - include: baremetal.yml
+  when: '"192.168." in ansible_default_ipv4.address'
+
 - include: docker.yml
 - include: k8s.yml

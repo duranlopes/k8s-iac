@@ -1,4 +1,3 @@
-#apiVersion: networking.k8s.io/v1beta1
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -14,6 +13,6 @@ spec:
           service:
             name: api-svc
             port:
-              number: 30000
-        path: /docs
+              number: 80
+        path: /
         pathType: Prefix

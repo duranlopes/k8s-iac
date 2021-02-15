@@ -33,10 +33,11 @@ spec:
           - configMapRef:
               name: api-configmap
         resources:
+          limits: 
+            cpu: 500m
           requests:
-            cpu: 10m        
+            cpu: 300m        
       restartPolicy: Always
-
 
 ---
 apiVersion: v1
@@ -54,21 +55,35 @@ spec:
 
 ---
 
-apiVersion: autoscaling/v2beta2
+apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: api-hpa
+  name: api-deployment
+  namespace: default
 spec:
+  maxReplicas: 10
+  minReplicas: 1
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
     name: api-deployment
-  minReplicas: 1
-  maxReplicas: 10
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 50
+  targetCPUUtilizationPercentage: 80
+
+#apiVersion: autoscaling/v2beta2
+#kind: HorizontalPodAutoscaler
+#metadata:
+#  name: api-hpa
+#spec:
+#  scaleTargetRef:
+#    apiVersion: apps/v1
+#    kind: Deployment
+#    name: api-deployment
+#  minReplicas: 1
+#  maxReplicas: 10
+#  metrics:
+#    - type: Resource
+#      resource:
+#        name: cpu
+#        target:
+#          type: Utilization
+#          averageUtilization: 50
