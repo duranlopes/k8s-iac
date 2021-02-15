@@ -6,12 +6,14 @@ IaC - Kubernetes
 ## Terraform 
 
 - vpc
+- subnet
 - security group
-- key_pair
-- ec2 instances (master, node)
+- key pair 
+- ec2 (master , nodes)
+- return external IPs `/iac/address`
+
 
 ## Ansible
-
 
 ### Install k8s
 
