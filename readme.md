@@ -1,7 +1,23 @@
-IaC - Kubernetes
-=========
+<h1 align="">K8s-IaC ✔️ </h1>
+<p>
+  <a href="/" target="_blank">
+    <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
+  </a>
+  <a href="/LICENSE" target="_blank">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
+  </a>
+  </a>
+</p>
 
-## This IaC provides a cluster at Aws using EC2 instances. I used Terraform to provision Aws EC2 Instances and Ansible to configure linux servers and integrate the master with the nodes.
+
+> A ideia principal desse repo é prover um cluster Kubernetes utilizando as principais ferramentas de IaC utilizadas no momento, para fins de estudos e testes de novas tecnologias relacionadas ao Kubernetes.
+
+
+## Github Actions
+
+- build terraform artifacts
+- terraform backend in aws s3
+- terraform init, validate, plan and show external and master internal
 
 ## Terraform 
 
@@ -12,13 +28,18 @@ IaC - Kubernetes
 - ec2 (master , nodes)
 - return external IPs `/iac/address`
 
+```
+cd iac/terraform
+terraform apply -auto-approve
+```
 
-## Ansible
+## Ansible roles
 
 ### Install k8s
 
 - Install docker
 - Install kubernetes
+
 
 ### Create cluster
 
@@ -28,25 +49,34 @@ IaC - Kubernetes
 - Install Weavenet CNI
 
 
+
 ### Nodes Join Workers
 
 - Reset previous config
 - Join cluster
 
-### Helm
+
+### Install Helm
 
 - Install helm
 - Init helm
 
-## K8s Cluster
+```
+cd iac/ansible
+ansible-playbook -i hosts main.yml
+```
+
+## Deploy Helm Charts tests
+
+
+- api:
 
 ```
-- api:
-    envVars: configmap
-    hpa: HorizontalPodAutoScaler
-    service: NodeClusterIp
+    helm install simpleapi k8s/helmcharts/simpleapi/
+```
 
 - db:
-    envVars: configmap
-    service: ClusterIp
+
+```
+    helm install db k8s/helmcharts/db/
 ```

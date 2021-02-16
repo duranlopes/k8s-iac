@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-configmap
+data:
+  DB_PASS: 7KAVTF745s56yryN
+  DB_SERVER: db
+  DB_USER: fastapi

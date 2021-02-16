@@ -2,7 +2,9 @@ import requests
 import json
 import names
 
+#url = "http://localhost:30000/users"
 url = "http://192.168.125.134:30000/users"
+
 
 while True:
     name = names.get_full_name()

@@ -8,8 +8,8 @@
 
 - name: Copy k8s manifests
   copy:
-    src: ../../k8s/manifests/
-    dest: /home/{{ ansible_ssh_user }}/manifests/
+    src: ../../k8s/
+    dest: /home/{{ ansible_ssh_user }}/
 
 - name: Pause for 5 minutes to build k8s cluster
   pause:
@@ -17,7 +17,7 @@
 
 - name: Apply ingress controller
   shell: kubectl apply -f /tmp/ingress_controller.yaml >> ingress_controller.log
-  args: 
+  args:
     chdir: /home/{{ ansible_ssh_user }}
     creates: ingress_controller.log
     become: true

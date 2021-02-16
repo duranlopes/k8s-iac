@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-configmap
+data:
+  MYSQL_ROOT_PASSWORD: 7KAVTF745s56yryN
+  MYSQL_USER: fastapi
+  MYSQL_DATABASE: crud
+  MYSQL_PASSWORD: 7KAVTF745s56yryN
