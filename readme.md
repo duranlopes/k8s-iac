@@ -37,3 +37,16 @@ IaC - Kubernetes
 
 - Install helm
 - Init helm
+
+## K8s Cluster
+
+```
+- api:
+    envVars: configmap
+    hpa: HorizontalPodAutoScaler
+    service: NodeClusterIp
+
+- db:
+    envVars: configmap
+    service: ClusterIp
+```

@@ -27,7 +27,7 @@
   with_items:
    - mkdir -p /home/{{ ansible_ssh_user }}/.kube
    - cp /etc/kubernetes/admin.conf /home/{{ ansible_ssh_user }}/.kube/config
-   - chown {{ ansible_ssh_user }}:{{ ansible_ssh_user }} /home/{{ ansible_ssh_user }}/.kube/config
+   - chown -R {{ ansible_ssh_user }}:{{ ansible_ssh_user }} /home/{{ ansible_ssh_user }}/.kube/config
   become: true
 
 - name: Configure weavenet networking.
