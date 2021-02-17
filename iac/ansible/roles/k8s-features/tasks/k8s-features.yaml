@@ -1,0 +1,26 @@
+
+- name: Ingress-controller file
+  template:
+    src: nginx_ingress.j2
+    dest: /tmp/ingress_controller.yaml
+    force: yes
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+
+- name: Copy k8s manifests
+  copy:
+    src: ../../k8s/
+    dest: /home/{{ ansible_ssh_user }}/
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+
+- name: Install ingress controller.
+  shell: kubectl apply -f /tmp/ingress_controller.yaml
+  register: ingress_result
+  become_user: '{{ ansible_ssh_user }}'
+
+
+- name: Install metric server.
+  shell: kubectl apply -f /home/{{ ansible_ssh_user }}/manifests/metric_server.yaml
+  register: metric_result
+  become_user: '{{ ansible_ssh_user }}'

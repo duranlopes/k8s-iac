@@ -1,6 +1,5 @@
 [all:vars]
 ansible_ssh_user=ubuntu
-master_external=192.168.125.134
 
 [k8s-master]
 192.168.125.134
@@ -11,6 +10,7 @@ master_external=192.168.125.134
 
 [k8s-workers:vars]
 K8S_MASTER_NODE_IP=192.168.125.134
+
 K8S_API_SECURE_PORT=6443
 
 [k8s:children]

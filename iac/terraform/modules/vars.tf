@@ -30,10 +30,18 @@ variable "aws_key_path" {
   default = "/home/duran/.ssh/id_rsa.pub"
 }
 
-variable "public_cidr_block" {
-  default = "10.0.0.0/16"
+variable "public_cidr_block1" {
+  default = "10.0.1.0/24"
 }
 
-variable "availability_zone" {
+variable "availability_zone1" {
   default = "us-east-1a"
+}
+
+variable "public_cidr_block2" {
+  default = "10.0.2.0/24"
+}
+
+variable "availability_zone2" {
+  default = "us-east-1b"
 }

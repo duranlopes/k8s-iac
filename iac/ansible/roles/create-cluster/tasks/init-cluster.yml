@@ -6,29 +6,19 @@
 - name: update k8s api images
   command: kubeadm config images pull
   become: true
-#  become_method: sudo
-#  become_user: root
 
 - name: Initialize Kubernetes master with kubeadm init.
   command:
     kubeadm init
   register: kubeadmin_init
   become: true
-#  become_method: sudo
-#  become_user: root
-
-- name: Ensure .kube directory exists.
-  file:
-    path: ~/.k8s
-    state: directory
 
 - name: Setup kubeconfig
   command: "{{ item }}"
   with_items:
    - mkdir -p /home/{{ ansible_ssh_user }}/.kube
    - cp /etc/kubernetes/admin.conf /home/{{ ansible_ssh_user }}/.kube/config
-   - chown -R {{ ansible_ssh_user }}:{{ ansible_ssh_user }} /home/{{ ansible_ssh_user }}/.kube/config
-  become: true
+   - chown -R {{ ansible_ssh_user }}:{{ ansible_ssh_user }} /home/{{ ansible_ssh_user }}/.kube
 
 - name: Configure weavenet networking.
   shell: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
@@ -36,6 +26,11 @@
   become: true
   become_method: sudo
   become_user: '{{ ansible_ssh_user }}'
+
+- name: Install autocomplete
+  copy:
+    src: autocomplete.sh
+    dest: /home/{{ ansible_ssh_user }}/
 
 - name: "Cluster token"
   shell: kubeadm token list | cut -d ' ' -f1 | sed -n '2p'
