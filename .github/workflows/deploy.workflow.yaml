@@ -36,7 +36,6 @@ jobs:
           name: terraform
           path: ${{ github.workspace }}/iac/terraform
 
-
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_wrapper: false
@@ -53,7 +52,7 @@ jobs:
         id: plan
         run: terraform plan -no-color -lock=false
         continue-on-error: true
-  
+
       - name: Terraform Apply
         run: terraform apply -auto-approve -lock=false
 

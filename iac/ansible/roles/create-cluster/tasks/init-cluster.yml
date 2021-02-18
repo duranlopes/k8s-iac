@@ -53,5 +53,3 @@
 - name: show hash
   debug:
     msg: "[Master] K8S_TOKEN_HOLDER K8S Hash is  {{ hostvars['K8S_TOKEN_HOLDER']['hash'] }}"
-
-

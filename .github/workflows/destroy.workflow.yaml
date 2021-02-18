@@ -36,7 +36,6 @@ jobs:
           name: terraform
           path: ${{ github.workspace }}/iac/terraform
 
-
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_wrapper: false
@@ -48,7 +47,7 @@ jobs:
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
-  
+
       - name: Terraform Destroy
         run: terraform destroy -auto-approve -lock=false
         continue-on-error: true

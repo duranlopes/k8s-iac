@@ -2,9 +2,9 @@
   copy:
     src: ../../k8s/
     dest: /home/{{ ansible_ssh_user }}/
-    #dest: /tmp/
     owner: "{{ ansible_ssh_user }}"
     group: "{{ ansible_ssh_user }}"
+
 
 - name: Install ingress controller.
   shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.44.0/deploy/static/provider/baremetal/deploy.yaml
@@ -13,6 +13,17 @@
 
 
 - name: Install metric server.
-  shell: kubectl apply -f /home/{{ ansible_ssh_user }}/manifests/metric_server.yaml
+  shell: kubectl apply -f /home/{{ ansible_ssh_user }}/manifests/metric_server/metric_server.yaml
   register: metric_result
+  become_user: '{{ ansible_ssh_user }}'
+
+
+- name: Install Prometheus + grafana
+  command: "{{ item }}"
+  with_items:
+    - helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+    - helm repo update
+    - helm install prometheus prometheus-community/kube-prometheus-stack
+    - "kubectl apply -f /home/{{ ansible_ssh_user }}/manifests/prometheus/grafana_svc.yaml"
+  register: prometheus_result
   become_user: '{{ ansible_ssh_user }}'

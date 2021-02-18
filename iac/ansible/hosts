@@ -2,14 +2,14 @@
 ansible_ssh_user=ubuntu
 
 [k8s-master]
-54.147.113.87
+54.146.25.61
 
 [k8s-workers]
-54.224.241.135
-54.224.82.139
+34.228.219.79
+3.91.251.101
 
 [k8s-workers:vars]
-K8S_MASTER_NODE_IP=10.0.1.155
+K8S_MASTER_NODE_IP=10.0.1.168
 K8S_API_SECURE_PORT=6443
 
 [k8s:children]
