@@ -41,6 +41,13 @@ jobs:
         with:
           terraform_wrapper: false
 
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
   
       - name: Terraform Destroy
         run: terraform destroy -auto-approve -lock=false
@@ -48,3 +55,4 @@ jobs:
 
       - name: Terraform show
         run: terraform show -no-color
+        continue-on-error: true
