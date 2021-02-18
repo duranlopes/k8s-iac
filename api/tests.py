@@ -2,8 +2,9 @@ import requests
 import json
 import names
 
-url = "http://localhost:30000/users"
-#url = "http://54.165.70.213:30000/users"
+
+#url = "http://localhost:30000/users"
+url = "http://52.70.159.179:30000/users"
 
 
 while True:
@@ -17,5 +18,5 @@ while True:
     except:
         response = requests.request("GET", url+"?skip=0&limit=100000", data=datajson, headers=headers)
         print(response.text)
-    #print(response.text)
+
 

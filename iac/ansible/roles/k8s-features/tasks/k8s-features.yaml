@@ -11,6 +11,7 @@
   copy:
     src: ../../k8s/
     dest: /home/{{ ansible_ssh_user }}/
+    #dest: /tmp/
     owner: "{{ ansible_ssh_user }}"
     group: "{{ ansible_ssh_user }}"
 

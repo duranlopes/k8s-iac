@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: grafana-np
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+      nodePort: 30002
+  selector:
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/name: grafana
+  type: NodePort
+

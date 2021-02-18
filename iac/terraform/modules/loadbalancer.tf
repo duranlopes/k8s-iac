@@ -34,3 +34,10 @@ resource "aws_lb_target_group_attachment" "target-vpc-ec2" {
   target_id        = aws_instance.node[count.index].id
   port             = 80
 }
+
+resource "aws_lb_target_group_attachment" "target-vpc-ec2-master" {
+  count            = var.instance_count_master
+  target_group_arn = aws_lb_target_group.target-vpc.arn
+  target_id        = aws_instance.master[count.index].id
+  port             = 80
+}
