@@ -1,13 +1,11 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ing-simpleapi
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
+  name: simpleapi
+  namespace: simpleapi
 spec:
   rules:
-  - host: simplecrud.com
-    http:
+  - http:
       paths: 
       - backend:
           service:
