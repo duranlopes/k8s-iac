@@ -68,22 +68,3 @@ spec:
     kind: Deployment
     name: api-deployment
   targetCPUUtilizationPercentage: 80
-
-#apiVersion: autoscaling/v2beta2
-#kind: HorizontalPodAutoscaler
-#metadata:
-#  name: api-hpa
-#spec:
-#  scaleTargetRef:
-#    apiVersion: apps/v1
-#    kind: Deployment
-#    name: api-deployment
-#  minReplicas: 1
-#  maxReplicas: 10
-#  metrics:
-#    - type: Resource
-#      resource:
-#        name: cpu
-#        target:
-#          type: Utilization
-#          averageUtilization: 50
