@@ -6,9 +6,10 @@ import os
 DB_USER = os.environ['DB_USER']
 DB_PASS = os.environ['DB_PASS']
 DB_SERVER = os.environ['DB_SERVER']
+DB_PORT = os.environ['DB_PORT']
 
 #SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
-SQLALCHEMY_DATABASE_URL = "mysql+pymysql://{}:{}@{}:3306/crud".format(DB_USER, DB_PASS, DB_SERVER)
+SQLALCHEMY_DATABASE_URL = "mysql+pymysql://{}:{}@{}:{}/crud".format(DB_USER, DB_PASS, DB_SERVER, DB_PORT)
 
 engine = create_engine("mysql+pymysql://{}:{}@{}/crud".format(DB_USER, DB_PASS, DB_SERVER))
 #engine = create_engine(

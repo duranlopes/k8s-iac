@@ -165,3 +165,4 @@ override.tf.json
 terraform.rc
 terraform/key/id_rsa.pub
 terraform/.terraform.lock.hcl
+data/

@@ -10,7 +10,7 @@ services:
     - MYSQL_DATABASE=crud
     - MYSQL_PASSWORD=7KAVTF745s56yryN
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - ${PWD}/data/mysql:/var/lib/mysql:rw
     networks:
@@ -33,6 +33,7 @@ services:
       - DB_PASS=7KAVTF745s56yryN
       - DB_SERVER=db
       - DB_USER=fastapi
+      - DB_PORT=3307
     depends_on: 
       - db
     volumes:
