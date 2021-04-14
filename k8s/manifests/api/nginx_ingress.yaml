@@ -1,16 +1,16 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: simpleapi
-  namespace: simpleapi
+  name: app-ingress
 spec:
   rules:
-  - http:
+  - host: app.prova
+    http:
       paths: 
-      - backend:
+      - path: /
+        pathType: Prefix
+        backend:
           service:
-            name: simpleapi
+            name: api-svc
             port:
               number: 80
-        path: /
-        pathType: Prefix

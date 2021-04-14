@@ -6,6 +6,7 @@ data:
   DB_PASS: 7KAVTF745s56yryN
   DB_SERVER: db-svc
   DB_USER: fastapi
+  DB_PORT: "3306"
 
 ---  
 apiVersion: apps/v1
@@ -26,7 +27,7 @@ spec:
     spec:
       containers:
       - name: api
-        image: duran750/k8s-iac
+        image: duran750/k8s-iac:v1
         ports:
         - containerPort: 80
         envFrom:
@@ -45,7 +46,7 @@ kind: Service
 metadata:
   name: api-svc
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
     - port: 80
       targetPort: 80
@@ -62,9 +63,9 @@ metadata:
   namespace: default
 spec:
   maxReplicas: 10
-  minReplicas: 1
+  minReplicas: 3
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
     name: api-deployment
-  targetCPUUtilizationPercentage: 80
+  targetCPUUtilizationPercentage: 20

@@ -7,9 +7,7 @@ data:
   MYSQL_USER: fastapi
   MYSQL_DATABASE: crud
   MYSQL_PASSWORD: 7KAVTF745s56yryN
-
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,9 +32,7 @@ spec:
         envFrom:
           - configMapRef:
               name: db-configmap
-              
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -47,4 +43,3 @@ spec:
     - port: 3306
   selector:
     app: db
-
