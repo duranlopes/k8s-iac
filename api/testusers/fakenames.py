@@ -2,8 +2,13 @@ import requests
 import json
 import names
 import asyncio
+import os
 
-url = "http://10.99.232.63/users"
+API_HOST=os.environ['API_HOST']
+API_PORT=os.environ['API_PORT']
+API_ENDPOINT=os.environ['API_ENDPOINT']
+
+url = "http://{}:{}/{}".format(API_HOST, API_PORT , API_ENDPOINT)
 
 async def main():
     while True:
@@ -15,6 +20,7 @@ async def main():
             response = requests.request("POST", url, data=datajson, headers=headers)
             print(response.text)
         except:
+        
             response = requests.request("GET", url+"?skip=0&limit=100000", data=datajson, headers=headers)
             print(response.text)
 

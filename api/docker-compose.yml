@@ -7,12 +7,12 @@ services:
     environment:
     - MYSQL_ROOT_PASSWORD=7KAVTF745s56yryN
     - MYSQL_USER=fastapi
-    - MYSQL_DATABASE=crud
+    - MYSQL_DATABASE=users
     - MYSQL_PASSWORD=7KAVTF745s56yryN
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
-      - ${PWD}/data/mysql:/var/lib/mysql:rw
+      - mysql:/var/lib/mysql:rw
     networks:
       - mysql-compose-network
 
@@ -26,18 +26,18 @@ services:
 
   api:
     container_name: api
-    image: duran750/k8s-iac:latest
+    image: duran750/userapi:v1
     ports:
       - 8070:80
     environment:
       - DB_PASS=7KAVTF745s56yryN
       - DB_SERVER=db
       - DB_USER=fastapi
-      - DB_PORT=3307
+      - DB_PORT=3306
     depends_on: 
       - db
     volumes:
-      - ${PWD}/sql_app:/app/sql_app
+      - ./sql_app:/app/sql_app
     networks:
       - mysql-compose-network
 
@@ -45,4 +45,6 @@ networks:
   mysql-compose-network:
     driver: bridge
 
+volumes:
+  mysql:
 

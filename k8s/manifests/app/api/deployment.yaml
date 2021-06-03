@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+  namespace: simpleapi
+  labels:
+    app: api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: duran750/userapi:v1
+          ports:
+            - containerPort: 80
+          env:
+          - name: DB_SERVER
+            value: db-svc
+          - name: DB_USER
+            value: "fastapi"
+          - name: DB_PORT
+            value: "3306"
+          - name: DB_PASS
+            valueFrom:
+              secretKeyRef:
+                name: api-secret
+                key: DB_PASS
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: 256Mi
+            requests:
+              cpu: "0.25"
+              memory: 128Mi
+      restartPolicy: Always
