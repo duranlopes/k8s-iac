@@ -17,7 +17,8 @@ spec:
     spec:
       containers:
         - name: api
-          image: duran750/userapi:v1
+          image: duran750/userapi:v2
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           env:

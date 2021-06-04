@@ -3,10 +3,17 @@ from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 from . import crud, models, schemas
 from .database import SessionLocal, engine
+from elasticapm.contrib.starlette import make_apm_client, ElasticAPM
 
 models.Base.metadata.create_all(bind=engine)
 
+apm = make_apm_client({
+          'SERVICE_NAME': 'simpleapp',
+          'SECRET_TOKEN': '',         
+          'SERVER_URL': 'http://apm-server-apm-server.default:8200'})
+
 app = FastAPI()
+app.add_middleware(ElasticAPM, client=apm)
 
 # Dependency
 def get_db():

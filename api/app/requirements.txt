@@ -2,3 +2,4 @@ fastapi
 PyMySQL
 SQLAlchemy
 uvicorn
+elastic-apm

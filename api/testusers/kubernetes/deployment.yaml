@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fakenames
+  namespace: simpleapi
+  labels:
+    app: fakenames
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: fakenames
+  template:
+    metadata:
+      labels:
+        app: fakenames
+    spec:
+      containers:
+        - name: fakenames
+          image: duran750/fakenames:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+          - name: API_HOST
+            value: "api-svc.simpleapi"
+          - name: API_PORT
+            value: "80"
+          - name: API_ENDPOINT
+            value: "users"
+      restartPolicy: "Always"
+
