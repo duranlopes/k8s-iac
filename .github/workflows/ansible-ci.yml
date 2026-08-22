@@ -1,0 +1,66 @@
+name: Ansible CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "iac/ansible/**"
+      - ".github/workflows/ansible-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "iac/ansible/**"
+      - ".github/workflows/ansible-ci.yml"
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: iac/ansible
+
+jobs:
+  lint:
+    name: Lint & Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Ansible tooling
+        run: |
+          pip install ansible-core ansible-lint ansible-compat
+          ansible-galaxy collection install -r requirements.yml
+
+      - name: Ansible Lint
+        run: ansible-lint --profile production .
+
+      - name: Syntax Check
+        run: ansible-playbook --syntax-check -i inventory.ini.example main.yml
+
+  molecule:
+    name: Molecule (install-k8s role)
+    runs-on: ubuntu-latest
+    # Integration test: the role runs inside a real systemd-enabled container.
+    # Enable by uncommenting once role tests are added under roles/*/molecule/.
+    if: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Molecule
+        run: pip install "molecule[lint,docker]" ansible-lint
+
+      - name: Run Molecule tests
+        run: |
+          cd roles/install-k8s
+          molecule test
