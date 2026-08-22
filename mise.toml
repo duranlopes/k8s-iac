@@ -1,0 +1,4 @@
+[tools]
+terraform = "latest"
+terraform-docs = "latest"
+tflint = "latest"
