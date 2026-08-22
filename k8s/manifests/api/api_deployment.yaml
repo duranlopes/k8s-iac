@@ -3,10 +3,17 @@ kind: ConfigMap
 metadata:
   name: api-configmap
 data:
-  DB_PASS: 7KAVTF745s56yryN
   DB_SERVER: db-svc
   DB_USER: fastapi
   DB_PORT: "3306"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: api-secret
+type: Opaque
+stringData:
+  DB_PASS: "CHANGE_ME"
 
 ---  
 apiVersion: apps/v1
@@ -33,6 +40,26 @@ spec:
         envFrom:
           - configMapRef:
               name: api-configmap
+          - secretRef:
+              name: api-secret
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         resources:
           limits: 
             cpu: 500m

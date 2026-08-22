@@ -1,0 +1,36 @@
+# Gateway API resources replacing the legacy NGINX Ingress setup.
+# Requires the Gateway API CRDs and an implementation such as Envoy Gateway
+# (installed by the k8s-features Ansible role).
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: app-gateway
+  namespace: default
+spec:
+  gatewayClassName: envoy-gateway
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: api-route
+  namespace: default
+spec:
+  parentRefs:
+    - name: app-gateway
+  hostnames:
+    - "app.prova"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: api-svc
+          port: 80
