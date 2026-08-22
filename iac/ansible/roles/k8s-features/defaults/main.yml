@@ -1,17 +1,23 @@
 ---
 kubernetes_kubeconfig: /etc/kubernetes/admin.conf
+
+# Gateway API CRDs (standard channel).
+gateway_api_crd_url: https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.1/standard-install.yaml
+
 k8s_features_helm_repositories:
-  - name: ingress-nginx
-    url: https://kubernetes.github.io/ingress-nginx
   - name: metrics-server
     url: https://kubernetes-sigs.github.io/metrics-server/
   - name: prometheus-community
     url: https://prometheus-community.github.io/helm-charts
 
-ingress_namespace: ingress-nginx
-ingress_release_name: ingress-nginx
-ingress_chart: ingress-nginx/ingress-nginx
-ingress_service_type: NodePort
+# Envoy Gateway implements the Kubernetes Gateway API.
+envoy_gateway_namespace: envoy-gateway-system
+envoy_gateway_release_name: envoy-gateway
+envoy_gateway_chart: oci://docker.io/envoyproxy/gateway-helm
+envoy_gateway_chart_version: v1.2.0
+
+# Gateway resource created after the controller is running.
+gateway_manifest_path: "{{ playbook_dir }}/../../k8s/gateway/gateway.yaml"
 
 metrics_namespace: kube-system
 metrics_release_name: metrics-server

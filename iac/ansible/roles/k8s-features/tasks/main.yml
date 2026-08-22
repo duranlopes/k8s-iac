@@ -6,18 +6,41 @@
     state: present
   loop: "{{ k8s_features_helm_repositories }}"
 
-- name: Install ingress-nginx
+- name: Install Gateway API CRDs
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ gateway_api_crd_url }}"
+    kubeconfig: "{{ kubernetes_kubeconfig }}"
+
+- name: Install Envoy Gateway (Gateway API implementation)
   kubernetes.core.helm:
-    name: "{{ ingress_release_name }}"
-    chart_ref: "{{ ingress_chart }}"
-    release_namespace: "{{ ingress_namespace }}"
+    name: "{{ envoy_gateway_release_name }}"
+    chart_ref: "{{ envoy_gateway_chart }}"
+    chart_version: "{{ envoy_gateway_chart_version }}"
+    release_namespace: "{{ envoy_gateway_namespace }}"
     create_namespace: true
-    release_values:
-      controller:
-        service:
-          type: "{{ ingress_service_type }}"
     kubeconfig: "{{ kubernetes_kubeconfig }}"
     state: present
+
+- name: Wait for Envoy Gateway controller to be ready
+  kubernetes.core.k8s_info:
+    api_version: apps/v1
+    kind: Deployment
+    namespace: "{{ envoy_gateway_namespace }}"
+    label_selectors:
+      - app.kubernetes.io/name=gateway-helm
+    wait: true
+    wait_condition:
+      type: Available
+      status: "True"
+    wait_timeout: 300
+    kubeconfig: "{{ kubernetes_kubeconfig }}"
+
+- name: Deploy Gateway and HTTPRoute resources
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ gateway_manifest_path }}"
+    kubeconfig: "{{ kubernetes_kubeconfig }}"
 
 - name: Install metrics-server
   kubernetes.core.helm:
