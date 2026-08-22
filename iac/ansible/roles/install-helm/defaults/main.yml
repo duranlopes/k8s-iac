@@ -1,0 +1,7 @@
+---
+helm_apt_key_url: https://baltocdn.com/helm/signing.asc
+helm_apt_keyring_path: /etc/apt/keyrings/helm.asc
+helm_apt_repository: >-
+  deb [signed-by={{ helm_apt_keyring_path }}]
+  https://baltocdn.com/helm/stable/debian/ all main
+helm_package_name: helm

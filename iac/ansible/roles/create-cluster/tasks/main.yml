@@ -1,3 +1,80 @@
 ---
-# tasks file for create-cluster
-- include: init-cluster.yml
+- name: Check whether the control plane is already initialized
+  ansible.builtin.stat:
+    path: /etc/kubernetes/admin.conf
+  register: kubeadm_admin_conf
+
+- name: Initialize the Kubernetes control plane
+  ansible.builtin.command:
+    argv: "{{ kubeadm_init_arguments + kubeadm_init_extra_args }}"
+    creates: /etc/kubernetes/admin.conf
+  when: not kubeadm_admin_conf.stat.exists
+  register: kubeadm_init_result
+  changed_when: true
+
+- name: Ensure the administrator kubeconfig directory exists
+  ansible.builtin.file:
+    path: "{{ kubernetes_admin_home }}/.kube"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0700'
+
+- name: Install the administrator kubeconfig
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ kubernetes_admin_kubeconfig }}"
+    remote_src: true
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0600'
+
+- name: Download the Calico CNI manifest
+  ansible.builtin.get_url:
+    url: "{{ kubernetes_cni_manifest_url }}"
+    dest: "{{ kubernetes_cni_manifest_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Apply the Calico CNI manifest
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ kubernetes_cni_manifest_path }}"
+    kubeconfig: /etc/kubernetes/admin.conf
+    apply: true
+
+- name: Create a worker join command
+  ansible.builtin.command:
+    argv:
+      - kubeadm
+      - token
+      - create
+      - "--ttl={{ kubeadm_token_ttl }}"
+      - --print-join-command
+  register: kubeadm_join_command
+  changed_when: false
+  no_log: true
+
+- name: Extract the worker bootstrap credentials
+  ansible.builtin.set_fact:
+    kubernetes_join_token: "{{ kubeadm_join_command.stdout | regex_search('--token\\s+(\\S+)', '\\1') | first }}"
+    kubernetes_join_ca_hash: "{{ kubeadm_join_command.stdout | regex_search('sha256:[0-9a-f]+') }}"
+  no_log: true
+
+- name: Validate the worker bootstrap credentials
+  ansible.builtin.assert:
+    that:
+      - kubernetes_join_token | length > 0
+      - kubernetes_join_ca_hash | length > 0
+    fail_msg: "kubeadm did not return a usable worker join token and CA hash."
+  no_log: true
+
+- name: Publish worker bootstrap credentials
+  ansible.builtin.add_host:
+    name: K8S_TOKEN_HOLDER
+    token: "{{ kubernetes_join_token }}"
+    hash: "{{ kubernetes_join_ca_hash }}"
+    api_server: "{{ kubernetes_control_plane_endpoint }}"
+    api_port: "{{ kubernetes_api_port }}"
+  no_log: true

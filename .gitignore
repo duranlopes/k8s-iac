@@ -176,3 +176,8 @@ iac/terraform/localstack.env
 
 # Keep the example tfvars in version control
 !iac/terraform/localstack.tfvars.example
+
+# Generated Ansible inventory and controller cache
+iac/ansible/inventory.ini
+iac/ansible/.ansible/
+iac/ansible/.cache/

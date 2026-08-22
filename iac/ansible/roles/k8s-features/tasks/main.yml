@@ -1,1 +1,38 @@
-- include: k8s-features.yaml
+---
+- name: Register Helm repositories
+  kubernetes.core.helm_repository:
+    name: "{{ item.name }}"
+    repo_url: "{{ item.url }}"
+    state: present
+  loop: "{{ k8s_features_helm_repositories }}"
+
+- name: Install ingress-nginx
+  kubernetes.core.helm:
+    name: "{{ ingress_release_name }}"
+    chart_ref: "{{ ingress_chart }}"
+    release_namespace: "{{ ingress_namespace }}"
+    create_namespace: true
+    release_values:
+      controller:
+        service:
+          type: "{{ ingress_service_type }}"
+    kubeconfig: "{{ kubernetes_kubeconfig }}"
+    state: present
+
+- name: Install metrics-server
+  kubernetes.core.helm:
+    name: "{{ metrics_release_name }}"
+    chart_ref: "{{ metrics_chart }}"
+    release_namespace: "{{ metrics_namespace }}"
+    create_namespace: true
+    kubeconfig: "{{ kubernetes_kubeconfig }}"
+    state: present
+
+- name: Install kube-prometheus-stack
+  kubernetes.core.helm:
+    name: "{{ monitoring_release_name }}"
+    chart_ref: "{{ monitoring_chart }}"
+    release_namespace: "{{ monitoring_namespace }}"
+    create_namespace: true
+    kubeconfig: "{{ kubernetes_kubeconfig }}"
+    state: present

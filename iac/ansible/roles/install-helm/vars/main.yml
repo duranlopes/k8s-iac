@@ -1,2 +1,0 @@
-deploy-grafana: bitnami/grafana
-deploy_prometheus: bitnami/prometheus-operator

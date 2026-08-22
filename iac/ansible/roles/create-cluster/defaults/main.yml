@@ -1,3 +1,18 @@
 ---
-# defaults file for create-cluster
-
+kubeadm_advertise_address: "{{ ansible_default_ipv4.address }}"
+kubernetes_control_plane_endpoint: "{{ ansible_default_ipv4.address }}"
+kubernetes_api_port: 6443
+kubernetes_pod_network_cidr: 192.168.0.0/16
+kubernetes_admin_home: "/home/{{ ansible_user }}"
+kubernetes_admin_kubeconfig: "{{ kubernetes_admin_home }}/.kube/config"
+kubernetes_cni_manifest_url: https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/calico.yaml
+kubernetes_cni_manifest_path: /etc/kubernetes/calico.yaml
+kubeadm_token_ttl: 24h
+kubeadm_init_arguments:
+  - kubeadm
+  - init
+  - "--apiserver-advertise-address={{ kubeadm_advertise_address }}"
+  - "--pod-network-cidr={{ kubernetes_pod_network_cidr }}"
+  - --cri-socket=unix:///run/containerd/containerd.sock
+kubeadm_init_extra_args: []
+kubeadm_join_extra_args: []

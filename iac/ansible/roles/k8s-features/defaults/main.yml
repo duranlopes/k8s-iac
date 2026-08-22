@@ -1,0 +1,22 @@
+---
+kubernetes_kubeconfig: /etc/kubernetes/admin.conf
+k8s_features_helm_repositories:
+  - name: ingress-nginx
+    url: https://kubernetes.github.io/ingress-nginx
+  - name: metrics-server
+    url: https://kubernetes-sigs.github.io/metrics-server/
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+
+ingress_namespace: ingress-nginx
+ingress_release_name: ingress-nginx
+ingress_chart: ingress-nginx/ingress-nginx
+ingress_service_type: NodePort
+
+metrics_namespace: kube-system
+metrics_release_name: metrics-server
+metrics_chart: metrics-server/metrics-server
+
+monitoring_namespace: monitoring
+monitoring_release_name: kube-prometheus-stack
+monitoring_chart: prometheus-community/kube-prometheus-stack

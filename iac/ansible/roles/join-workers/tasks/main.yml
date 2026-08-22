@@ -1,3 +1,30 @@
 ---
-# tasks file for join-workers
-- include: join-cluster.yml
+- name: Check whether the worker has already joined the cluster
+  ansible.builtin.stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubelet_config
+
+- name: Verify that the control plane published worker credentials
+  ansible.builtin.assert:
+    that:
+      - hostvars['K8S_TOKEN_HOLDER'] is defined
+      - hostvars['K8S_TOKEN_HOLDER']['token'] is defined
+      - hostvars['K8S_TOKEN_HOLDER']['hash'] is defined
+      - hostvars['K8S_TOKEN_HOLDER']['api_server'] is defined
+    fail_msg: "The control plane did not publish K8S_TOKEN_HOLDER credentials."
+  when: not kubelet_config.stat.exists
+
+- name: Join the worker to the Kubernetes cluster
+  ansible.builtin.command:
+    argv: "{{ kubeadm_join_arguments + kubeadm_join_extra_args }}"
+  vars:
+    kubeadm_join_arguments:
+      - kubeadm
+      - join
+      - "{{ hostvars['K8S_TOKEN_HOLDER']['api_server'] }}:{{ hostvars['K8S_TOKEN_HOLDER']['api_port'] }}"
+      - "--token={{ hostvars['K8S_TOKEN_HOLDER']['token'] }}"
+      - "--discovery-token-ca-cert-hash={{ hostvars['K8S_TOKEN_HOLDER']['hash'] }}"
+      - --cri-socket=unix:///run/containerd/containerd.sock
+  when: not kubelet_config.stat.exists
+  no_log: true
+  changed_when: true

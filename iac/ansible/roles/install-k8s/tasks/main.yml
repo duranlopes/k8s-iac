@@ -1,7 +1,101 @@
 ---
-# tasks file for install-k8s
-- include: baremetal.yml
-  when: '"192.168." in ansible_default_ipv4.address'
+- name: Verify that the target is a supported Debian-family host
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Debian'
+    fail_msg: "The install-k8s role supports Debian-family distributions only."
 
-- include: docker.yml
-- include: k8s.yml
+- name: Install Kubernetes and containerd prerequisites
+  ansible.builtin.apt:
+    name: "{{ kubernetes_prerequisite_packages }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Disable active swap
+  ansible.builtin.command:
+    cmd: swapoff -a
+  when: ansible_facts.swaptotal_mb | int > 0
+  changed_when: false
+
+- name: Remove swap entries from fstab
+  ansible.posix.mount:
+    path: "{{ item }}"
+    fstype: swap
+    state: absent
+  loop:
+    - swap
+    - none
+
+- name: Persist the Kubernetes kernel modules
+  ansible.builtin.copy:
+    content: "{{ kubernetes_kernel_modules | join('\n') }}\n"
+    dest: /etc/modules-load.d/kubernetes.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Load Kubernetes kernel modules
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ kubernetes_kernel_modules }}"
+
+- name: Configure Kubernetes networking sysctls
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    sysctl_file: /etc/sysctl.d/99-kubernetes.conf
+    state: present
+    reload: true
+  loop: "{{ kubernetes_sysctl_settings | dict2items }}"
+
+- name: Ensure the apt keyring directory exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install the Kubernetes repository signing key
+  ansible.builtin.get_url:
+    url: "{{ kubernetes_apt_key_url }}"
+    dest: "{{ kubernetes_apt_keyring_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Configure the Kubernetes package repository
+  ansible.builtin.apt_repository:
+    repo: "{{ kubernetes_apt_repository }}"
+    filename: kubernetes
+    state: present
+    update_cache: true
+
+- name: Install containerd and Kubernetes packages
+  ansible.builtin.apt:
+    name: "{{ kubernetes_packages }}"
+    state: present
+    update_cache: true
+
+- name: Configure containerd for Kubernetes
+  ansible.builtin.template:
+    src: containerd-config.toml.j2
+    dest: "{{ kubernetes_containerd_config_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart containerd
+
+- name: Ensure containerd is enabled and running
+  ansible.builtin.systemd_service:
+    name: containerd
+    enabled: true
+    state: started
+
+- name: Ensure kubelet is enabled
+  ansible.builtin.systemd_service:
+    name: kubelet
+    enabled: true
+    state: started

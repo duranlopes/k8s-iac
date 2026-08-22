@@ -1,29 +1,44 @@
-- hosts: all
-  become: yes
-  user: ubuntu
-  gather_facts: yes
+---
+- name: Prepare Kubernetes nodes
+  hosts: k8s
+  become: true
+  gather_facts: true
   roles:
-    - { role: install-k8s, tags: ["install_k8s_role"] }
+    - role: install-k8s
+      tags:
+        - install
+        - install-k8s
 
-- hosts: k8s-master
-  become: yes
-  become_method: sudo
-  become_user: root
-  user: ubuntu
+- name: Initialize the Kubernetes control plane
+  hosts: k8s-master
+  become: true
+  gather_facts: true
   roles:
-    - { role: create-cluster, tags: ["create_cluster_role"] }
+    - role: create-cluster
+      tags:
+        - cluster
+        - control-plane
 
-- hosts: k8s-workers
-  become: yes
-  become_method: sudo
-  become_user: ubuntu
+- name: Join Kubernetes workers
+  hosts: k8s-workers
+  become: true
+  gather_facts: true
   roles:
-    - { role: join-workers, tags: ["join_workers_role"] }
+    - role: join-workers
+      tags:
+        - cluster
+        - workers
 
-- hosts: k8s-master
-  become: yes
-  gather_facts: yes
-  user: ubuntu
+- name: Install Helm and cluster add-ons
+  hosts: k8s-master
+  become: true
+  gather_facts: true
   roles:
-    - { role: install-helm, tags: ["install_helm_role"] }
-    - { role: k8s-features }
+    - role: install-helm
+      tags:
+        - addons
+        - helm
+    - role: k8s-features
+      tags:
+        - addons
+        - features

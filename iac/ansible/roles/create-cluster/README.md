@@ -1,38 +1,21 @@
-Role Name
-=========
+# create-cluster role
 
-A brief description of the role goes here.
+This role initializes one kubeadm control plane, installs the Calico CNI, and
+publishes short-lived worker bootstrap credentials through the dynamic
+`K8S_TOKEN_HOLDER` host. Initialization is guarded by
+`/etc/kubernetes/admin.conf`, so re-running the playbook does not reset an
+existing control plane.
 
-Requirements
-------------
+## Variables
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- `kubeadm_advertise_address`: Address advertised by the API server.
+- `kubernetes_control_plane_endpoint`: Address workers use to reach the API.
+- `kubernetes_api_port`: Kubernetes API port, default `6443`.
+- `kubernetes_pod_network_cidr`: Pod CIDR passed to kubeadm, default
+  `192.168.0.0/16`.
+- `kubernetes_cni_manifest_url`: Calico manifest URL.
+- `kubeadm_token_ttl`: Lifetime of the worker token, default `24h`.
+- `kubeadm_init_extra_args`: Additional kubeadm init arguments as a list.
 
-Role Variables
---------------
-
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
-
-Dependencies
-------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
-
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+The role expects `ansible_user` to identify the SSH user whose kubeconfig is
+created. It does not perform a destructive `kubeadm reset`.

@@ -1,0 +1,18 @@
+# Copy this file to inventory.ini and replace every placeholder with values
+# from Terraform outputs. Do not commit the generated inventory.ini file.
+
+[all:vars]
+ansible_user=YOUR_SSH_USER
+ansible_become=true
+kubernetes_api_port=6443
+
+[k8s-master]
+control-plane-0 ansible_host=CONTROL_PLANE_PUBLIC_IP kubernetes_control_plane_endpoint=CONTROL_PLANE_PRIVATE_IP
+
+[k8s-workers]
+worker-0 ansible_host=WORKER_0_PUBLIC_IP
+worker-1 ansible_host=WORKER_1_PUBLIC_IP
+
+[k8s:children]
+k8s-master
+k8s-workers

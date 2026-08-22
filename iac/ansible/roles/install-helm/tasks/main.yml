@@ -1,3 +1,29 @@
 ---
-# tasks file for install-helm
-- include: install-helm.yml
+- name: Ensure the Helm apt keyring directory exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install the Helm repository signing key
+  ansible.builtin.get_url:
+    url: "{{ helm_apt_key_url }}"
+    dest: "{{ helm_apt_keyring_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Configure the Helm package repository
+  ansible.builtin.apt_repository:
+    repo: "{{ helm_apt_repository }}"
+    filename: helm
+    state: present
+    update_cache: true
+
+- name: Install Helm
+  ansible.builtin.apt:
+    name: "{{ helm_package_name }}"
+    state: present
+    update_cache: true

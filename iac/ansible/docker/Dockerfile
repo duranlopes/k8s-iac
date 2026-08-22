@@ -1,21 +1,18 @@
-FROM alpine:3.9
-#ENV PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/ansible/.local/bin:/ansible/.gem/ruby/2.5.0/bin'
-RUN apk update && apk upgrade && \
-  apk add bash git python3 openssh-client openssl \
-  py3-paramiko py3-psutil py3-pluggy py3-bcrypt py3-pynacl \
-  py3-cryptography py3-cffi py3-docutils py3-rsa py3-click py3-dateutil \
-  py3-urllib3 py3-markupsafe py3-pygit2 py3-future py-futures py3-requests \
-  py3-ptyprocess py3-mccabe py3-pyflakes py3-chardet py3-certifi \
-  py3-atomicwrites py3-attrs py3-py py-openssl \
-  libstdc++ g++ make
+FROM python:3.12-slim
 
-RUN pip3 install pip --upgrade && \
-  pip3 install ansible==2.10.0 pyvmomi==7.0 
+ENV ANSIBLE_STDOUT_CALLBACK=ansible.builtin.default
+ENV ANSIBLE_CONFIG=/app/ansible.cfg
 
-RUN  adduser -h /ansible -s /bin/bash -D ansible
+RUN apt-get update \
+    && apt-get install --no-install-recommends --yes ca-certificates git openssh-client \
+    && rm -rf /var/lib/apt/lists/* \
+    && python -m pip install --no-cache-dir \
+        ansible-core>=2.17,<2.19 \
+        ansible-lint>=24.0 \
+        kubernetes>=30.0
 
+RUN useradd --create-home --shell /bin/bash ansible
+
+WORKDIR /app
+COPY --chown=ansible:ansible . /app
 USER ansible
-WORKDIR /app 
-ENV ANSIBLE_STDOUT_CALLBACK='debug'
-ADD . /app
-
