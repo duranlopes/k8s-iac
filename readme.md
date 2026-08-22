@@ -1,82 +1,92 @@
-<h1 align="">K8s-IaC ✔️ </h1>
-<p>
-  <a href="/" target="_blank">
-    <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
-  </a>
-  <a href="/LICENSE" target="_blank">
-    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
-  </a>
-  </a>
-</p>
+# k8s-iac
 
+Kubernetes cluster on AWS provisioned with Terraform, configured with Ansible, and deployed with Helm — built for studying Kubernetes and IaC tooling.
 
-> A ideia principal desse repo é prover um cluster Kubernetes utilizando as principais ferramentas de IaC utilizadas no momento, para fins de estudos e testes de novas tecnologias relacionadas ao Kubernetes.
-
-
-## Github Actions
-
-- build terraform artifacts
-- terraform backend in aws s3
-- terraform init, validate, plan and show external and master internal
-
-## Terraform 
-
-- vpc
-- subnet
-- security group
-- key pair 
-- ec2 (master , nodes)
-- return external IPs `/iac/address`
+## Repository Layout
 
 ```
+api/                  # FastAPI demo application (deployed to the cluster)
+iac/
+  ansible/            # Ansible roles: install-k8s, create-cluster, join-workers, install-helm, k8s-features
+  terraform/          # Terraform module: VPC, subnets, security groups, EC2 (master/nodes), ALB
+k8s/
+  helmcharts/         # Helm charts: simpleapi, db
+  manifests/          # Raw Kubernetes manifests
+```
+
+## Tooling
+
+This repository uses [mise](https://mise.jdx.dev) to pin the required CLIs:
+
+- terraform
+- terraform-docs
+- tflint
+
+After installing mise, the tools are provisioned automatically when you `cd` into the repository:
+
+```bash
+curl https://mise.run | sh
+cd k8s-iac   # mise installs the tools listed in mise.toml
+```
+
+## Terraform
+
+The root module wraps `iac/terraform/modules`, which provisions:
+
+- VPC with DNS support
+- Two public subnets across two AZs
+- Internet gateway and route tables
+- Security group for cluster traffic (SSH, HTTP/HTTPS, 6443, NodePorts)
+- EC2 instances: 1 control plane + 2 workers (Ubuntu 22.04 LTS, AMI resolved dynamically or via `ami_id`)
+- Application Load Balancer targeting the nodes
+
+Required input:
+
+| Variable     | Description                              |
+|--------------|------------------------------------------|
+| `public_key` | SSH public key material for the key pair |
+
+### Deploy to real AWS
+
+Credentials come from the environment or `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` secrets in GitHub Actions.
+
+```bash
 cd iac/terraform
-terraform apply -auto-approve
+terraform init
+terraform plan -var="public_key=$(cat ~/.ssh/id_rsa.pub)"
+terraform apply -auto-approve -var="public_key=$(cat ~/.ssh/id_rsa.pub)"
 ```
 
-## Ansible roles
+Remote state is stored in S3 (bucket `terraform-state-duran`). Adjust the `backend "s3"` block in `main.tf` as needed.
 
-### Install k8s
+### Test locally with LocalStack
 
-- Install docker
-- Install kubernetes
+LocalStack emulates AWS APIs so the configuration can be validated without touching real infrastructure.
 
-
-### Create cluster
-
-- Reset cluster (if exists)
-- Update k8s images
-- Initiate a cluster with 'kubeadm'
-- Install Weavenet CNI
-
-
-
-### Nodes Join Workers
-
-- Reset previous config
-- Join cluster
-
-
-### Install Helm
-
-- Install helm
-- Init helm
-
-```
-cd iac/ansible
-ansible-playbook -i hosts main.yml
+```bash
+cd iac/terraform
+docker compose -f docker-compose.localstack.yml up -d --wait
+source localstack.env
+terraform init -backend=false
+terraform plan -var-file=localstack.tfvars.example -var="public_key=$(cat ~/.ssh/id_rsa.pub)"
 ```
 
-## Deploy Helm Charts tests
+### GitHub Actions
 
+- `terraform-ci.yml` — fmt check, validate, tflint, and a full `terraform plan` against LocalStack on every PR/push touching `iac/terraform/**`
+- `deploy.workflow.yaml` — manual deploy to real AWS (`workflow_dispatch`)
+- `destroy.workflow.yaml` — manual destroy (`workflow_dispatch`)
 
-- api:
+## Ansible
 
-```
-    helm install simpleapi k8s/helmcharts/simpleapi/
-```
+Roles are executed from `iac/ansible` against the IPs written by Terraform to `iac/address/`:
 
-- db:
+- **install-k8s** — Docker + Kubernetes packages
+- **create-cluster** — `kubeadm init` on the control plane
+- **join-workers** — worker nodes join the cluster
+- **install-helm** — Helm bootstrap
+- **k8s-features** — ingress controller and cluster add-ons
 
-```
-    helm install db k8s/helmcharts/db/
-```
+## License
+
+MIT
