@@ -28,7 +28,9 @@ podAnnotations: {}
 podSecurityContext: {}
   # fsGroup: 2000
 
-securityContext: {}
+securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
   # capabilities:
   #   drop:
   #   - ALL
