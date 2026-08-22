@@ -1,0 +1,88 @@
+name: Terraform CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "iac/terraform/**"
+      - ".github/workflows/terraform-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "iac/terraform/**"
+      - ".github/workflows/terraform-ci.yml"
+
+permissions:
+  contents: read
+
+env:
+  TF_IN_AUTOMATION: "true"
+
+jobs:
+  fmt-validate:
+    name: Format & Validate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: iac/terraform
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jdx/mise-action@v2
+
+      - name: Terraform Format
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Init (no backend)
+        run: terraform init -backend=false
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: TFLint
+        run: mise exec -- tflint --chdir=.
+
+  localstack-plan:
+    name: Plan against LocalStack
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: iac/terraform
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jdx/mise-action@v2
+
+      - name: Start LocalStack
+        run: docker compose -f docker-compose.localstack.yml up -d --wait
+
+      - name: Wait for LocalStack
+        run: |
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:4566/_localstack/health | grep -q '"ec2":'; then
+              echo "LocalStack ready"; exit 0
+            fi
+            sleep 2
+          done
+          echo "LocalStack failed to start"; exit 1
+
+      - name: Terraform Init (no backend)
+        run: terraform init -backend=false
+        env:
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          AWS_ENDPOINT_URL: http://localhost:4566
+
+      # The public_key var is a dummy key for plan-only validation.
+      # A real apply is not performed in CI; this validates the config end to end.
+      - name: Terraform Plan
+        run: >
+          terraform plan -input=false -refresh=false -lock=false
+          -var-file=localstack.tfvars.example
+          -var="public_key=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7ciQKJlR8bTqPZ0 dummy@ci"
+        env:
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          AWS_REGION: us-east-1
+          AWS_ENDPOINT_URL: http://localhost:4566
