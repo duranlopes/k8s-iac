@@ -43,10 +43,29 @@ securityContext:
 service:
   type: NodePort
   port: 80
+  targetPort: http
   nodePort: 30000
 
-# Routing is handled by Gateway API (HTTPRoute) instead of Ingress.
-# See k8s/gateway/gateway.yaml.
+# Port exposed by the application container.
+containerPort: 80
+
+# Gateway API routing (replaces Ingress).
+gateway:
+  enabled: true
+  # Set true to let the chart create the Gateway; otherwise it must exist
+  # (installed by the k8s-features Ansible role or k8s/gateway/gateway.yaml).
+  createGateway: false
+  name: app-gateway
+  className: envoy-gateway
+  port: 80
+  hostnames:
+    - app.prova
+  parentRefs:
+    - name: app-gateway
+      # namespace: default
+      # sectionName: http
+  pathType: PathPrefix
+  path: /
 
 resources:
   limits:

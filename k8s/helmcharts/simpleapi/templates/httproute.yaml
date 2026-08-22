@@ -1,0 +1,48 @@
+{{/*
+Gateway API HTTPRoute. Enabled via .Values.gateway.enabled.
+The referenced Gateway is expected to exist (see k8s/gateway/gateway.yaml
+or the k8s-features Ansible role); the chart can also create it when
+gateway.createGateway is true.
+*/}}
+{{- if .Values.gateway.enabled }}
+{{- if .Values.gateway.createGateway }}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ .Values.gateway.name }}
+  labels:
+    {{- include "simpleapi.labels" . | nindent 4 }}
+spec:
+  gatewayClassName: {{ .Values.gateway.className }}
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: {{ .Values.gateway.port }}
+      allowedRoutes:
+        namespaces:
+          from: All
+{{- end }}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "simpleapi.fullname" . }}
+  labels:
+    {{- include "simpleapi.labels" . | nindent 4 }}
+spec:
+  parentRefs:
+    {{- toYaml .Values.gateway.parentRefs | nindent 4 }}
+  {{- with .Values.gateway.hostnames }}
+  hostnames:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+    - matches:
+        - path:
+            type: {{ .Values.gateway.pathType }}
+            value: {{ .Values.gateway.path }}
+      backendRefs:
+        - name: {{ include "simpleapi.fullname" . }}
+          port: {{ .Values.service.port }}
+{{- end }}
