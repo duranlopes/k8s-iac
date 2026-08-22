@@ -166,3 +166,13 @@ terraform.rc
 terraform/key/id_rsa.pub
 terraform/.terraform.lock.hcl
 data/
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+crash.log
+override.tf
+iac/terraform/localstack.env
+
+# Keep the example tfvars in version control
+!iac/terraform/localstack.tfvars.example
