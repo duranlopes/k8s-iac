@@ -3,55 +3,28 @@ name: DestroyTerraform
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: terraform
-          path: ${{ github.workspace }}/iac/terraform
-
   destroy-infra:
     name: Destroy Infra
     runs-on: ubuntu-latest
-
     defaults:
       run:
-        working-directory: ${{ github.workspace }}/iac/terraform
+        working-directory: iac/terraform
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      SSH_KEY: ${{ secrets.SSH_KEY }}
 
-    needs: build
     steps:
-      - name: Download Terraform
-        uses: actions/download-artifact@v2
-        with:
-          name: terraform
-          path: ${{ github.workspace }}/iac/terraform
+      - uses: actions/checkout@v4
 
-      - uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_wrapper: false
+      - uses: jdx/mise-action@v2
 
       - name: Terraform Init
-        id: init
-        run: terraform init
-
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate -no-color
+        run: terraform init -input=false
 
       - name: Terraform Destroy
-        run: terraform destroy -auto-approve -lock=false
-        continue-on-error: true
-
-      - name: Terraform show
-        run: terraform show -no-color
-        continue-on-error: true
+        run: terraform destroy -auto-approve -input=false -var="public_key=${{ secrets.SSH_PUBLIC_KEY }}"
