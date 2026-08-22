@@ -1,0 +1,24 @@
+# LocalStack for testing the Terraform configuration locally.
+# Usage:
+#   docker compose -f docker-compose.localstack.yml up -d
+#   source localstack.env
+#   terraform init -backend=false
+#   terraform plan -var-file=localstack.tfvars.example -var="public_key=$(cat ~/.ssh/id_rsa.pub)"
+
+services:
+  localstack:
+    image: localstack/localstack:4.3.0
+    container_name: k8s-iac-localstack
+    ports:
+      - "4566:4566" # LocalStack edge (all AWS APIs)
+    environment:
+      - SERVICES=ec2,elbv2,ec2,iam,s3,sts
+      - DEBUG=0
+      - PERSISTENCE=0
+      - AWS_DEFAULT_REGION=us-east-1
+    volumes:
+      - localstack_data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  localstack_data:

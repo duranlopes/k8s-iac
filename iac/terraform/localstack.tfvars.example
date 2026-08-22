@@ -1,0 +1,17 @@
+# Local development/testing configuration for Terraform against LocalStack.
+#
+# Usage:
+#   terraform init -backend=false
+#   terraform plan -var-file=localstack.tfvars -var="public_key=$HOME/.ssh/id_rsa.pub"
+#
+# The provider endpoints are injected via the environment file `localstack.env`
+# (see README) or by the CI workflow.
+
+# The AMI lookup requires real AWS; LocalStack has no AMIs registered,
+# so we pin a dummy ID for local planning.
+ami_id                  = "ami-026c8acd92718196b"
+aws_region              = "us-east-1"
+instance_count_master  = 1
+instance_count_node    = 2
+instance_type_master   = "t3.large"
+instance_type_node     = "t3.large"
