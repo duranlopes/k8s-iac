@@ -1,26 +1,29 @@
-
-
 resource "aws_instance" "master" {
-  count         = var.instance_count_master
-  ami           = var.aws_ami
-  instance_type = var.instance_type_master
-  key_name      = aws_key_pair.key_k8s.key_name
-  subnet_id     = aws_subnet.k8s_network1.id
+  count = var.instance_count_master
+
+  ami                    = local.ami_id
+  instance_type          = var.instance_type_master
+  key_name               = aws_key_pair.k8s.key_name
+  subnet_id              = aws_subnet.public_1.id
+  vpc_security_group_ids = [aws_security_group.k8s.id]
+
   tags = {
-    Name = "master-${count.index}"
+    Name = "${var.project_name}-master-${count.index}"
+    Role = "control-plane"
   }
-  vpc_security_group_ids = [aws_security_group.security_k8s.id]
 }
 
 resource "aws_instance" "node" {
-  count         = var.instance_count_node
-  ami           = var.aws_ami
-  instance_type = var.instance_type_node
-  key_name      = aws_key_pair.key_k8s.key_name
-  subnet_id     = aws_subnet.k8s_network1.id
-  tags = {
-    Name = "node-${count.index}"
-  }
+  count = var.instance_count_node
 
-  vpc_security_group_ids = [aws_security_group.security_k8s.id]
+  ami                    = local.ami_id
+  instance_type          = var.instance_type_node
+  key_name               = aws_key_pair.k8s.key_name
+  subnet_id              = aws_subnet.public_1.id
+  vpc_security_group_ids = [aws_security_group.k8s.id]
+
+  tags = {
+    Name = "${var.project_name}-node-${count.index}"
+    Role = "worker"
+  }
 }

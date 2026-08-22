@@ -1,20 +1,19 @@
-output "master_public_ip" {
-  value = aws_instance.master[0].public_ip
+output "master_public_ips" {
+  description = "Public IPs of the control plane instances."
+  value       = aws_instance.master[*].public_ip
 }
 
-output "master_private_ip" {
-  value = aws_instance.master[0].private_ip
+output "master_private_ips" {
+  description = "Private IPs of the control plane instances."
+  value       = aws_instance.master[*].private_ip
 }
 
-output "nodes_ip0" {
-  value = aws_instance.node[0].public_ip
+output "node_public_ips" {
+  description = "Public IPs of the worker nodes."
+  value       = aws_instance.node[*].public_ip
 }
 
-
-output "nodes_ip1" {
-  value = aws_instance.node[1].public_ip
-}
-
-output "nodes_ips" {
-  value = aws_instance.node.*.public_ip
+output "load_balancer_dns" {
+  description = "DNS name of the application load balancer."
+  value       = aws_lb.k8s.dns_name
 }
