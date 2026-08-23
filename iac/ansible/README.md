@@ -14,7 +14,7 @@ addresses.
    `/etc/kubernetes/admin.conf` is absent and installs Calico networking.
 3. `join-workers` runs `kubeadm join` only when a worker has not already joined.
 4. `install-helm` installs Helm from the signed Helm apt repository.
-5. `k8s-features` installs ingress-nginx, metrics-server, and the Prometheus
+5. `k8s-features` installs Envoy Gateway (Gateway API), metrics-server, and the Prometheus
    community stack using the Kubernetes Ansible collection's Helm modules.
 
 ## Controller setup

@@ -41,7 +41,7 @@ Built for studying Kubernetes and modern IaC practices. Every Terraform change i
 │   │       ├── create-cluster/ #   kubeadm init on the control plane
 │   │       ├── join-workers/   #   Workers join the cluster
 │   │       ├── install-helm/   #   Helm bootstrap
-│   │       └── k8s-features/   #   Ingress controller and add-ons
+│   │       └── k8s-features/   #   Gateway API (Envoy Gateway) and add-ons
 │   └── terraform/
 │       ├── main.tf             # Root module (wraps ./modules)
 │       ├── modules/            # VPC, subnets, SG, EC2, ALB, key pair
@@ -49,7 +49,8 @@ Built for studying Kubernetes and modern IaC practices. Every Terraform change i
 │       └── localstack.tfvars.example
 ├── k8s/
 │   ├── helmcharts/             # simpleapi and db charts
-│   └── manifests/              # Raw manifests (ingress, metrics-server, prometheus)
+│   ├── gateway/                # Shared Gateway API manifest (Gateway + HTTPRoute)
+│   └── manifests/              # Raw manifests (api, db, misc)
 └── .github/workflows/          # CI (LocalStack plan), deploy, destroy
 ```
 
@@ -149,7 +150,7 @@ Roles run from `iac/ansible` against the IPs Terraform writes to `iac/address/`:
 2. **create-cluster** — `kubeadm init` + CNI on the control plane
 3. **join-workers** — workers join using the bootstrap token
 4. **install-helm** — Helm binary and tiller-less setup
-5. **k8s-features** — NGINX ingress controller and cluster add-ons
+5. **k8s-features** — Envoy Gateway (Gateway API), metrics-server, kube-prometheus-stack
 
 ## 🗺️ Roadmap
 
