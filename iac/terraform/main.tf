@@ -2,7 +2,6 @@ module "k8s_cluster" {
   source = "./modules"
 
   project_name          = var.project_name
-  aws_region            = var.aws_region
   ami_id                = var.ami_id
   instance_type_master  = var.instance_type_master
   instance_type_node    = var.instance_type_node
@@ -60,6 +59,24 @@ variable "public_key" {
 
 terraform {
   required_version = ">= 1.6.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+
+  default_tags {
+    tags = {
+      Project   = var.project_name
+      ManagedBy = "terraform"
+    }
+  }
 }
 
 output "master_public_ips" {

@@ -4,12 +4,6 @@ variable "project_name" {
   default     = "k8s-iac"
 }
 
-variable "aws_region" {
-  description = "AWS region to deploy resources."
-  type        = string
-  default     = "us-east-1"
-}
-
 variable "ami_id" {
   description = "AMI ID for EC2 instances. If empty, the latest Ubuntu 22.04 LTS AMI is resolved dynamically."
   type        = string
