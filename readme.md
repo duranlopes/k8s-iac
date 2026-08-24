@@ -137,8 +137,25 @@ terraform plan -var-file=localstack.tfvars.example -var="public_key=$(cat ~/.ssh
 | Workflow | Trigger | What it does |
 |----------|---------|--------------|
 | [`terraform-ci.yml`](.github/workflows/terraform-ci.yml) | PR / push touching `iac/terraform/**` | `fmt -check`, `validate`, `tflint` + full `terraform plan` against LocalStack |
+| [`ansible-ci.yml`](.github/workflows/ansible-ci.yml) | PR / push touching `iac/ansible/**` | Ansible production-profile lint and syntax validation |
+| [`renovate.yml`](.github/workflows/renovate.yml) | Daily / manual | Detects dependency updates and creates independently reviewable PRs with commits |
 | [`deploy.workflow.yaml`](.github/workflows/deploy.workflow.yaml) | Manual (`workflow_dispatch`) | init → validate → plan → apply against real AWS |
 | [`destroy.workflow.yaml`](.github/workflows/destroy.workflow.yaml) | Manual (`workflow_dispatch`) | Teardown of the provisioned infrastructure |
+
+### Renovate setup
+
+Renovate monitors Terraform providers/modules, Helm values and images, Dockerfiles,
+Ansible Galaxy collections, GitHub Actions, Gateway API CRDs, and Envoy Gateway.
+Each update is created as a separate branch and pull request so CI can validate it
+before merging.
+
+Create a repository secret named `RENOVATE_TOKEN` with a GitHub token that can read
+contents and create/update branches, issues, and pull requests. Then run the
+**Renovate** workflow manually once to verify the configuration. The workflow also
+runs daily at 03:17 UTC.
+
+The Renovate configuration is in [`renovate.json5`](renovate.json5). Renovate does
+not push directly to `main`; it creates commits in dependency branches and opens PRs.
 
 The CI badge at the top reflects the latest LocalStack validation run.
 
@@ -156,7 +173,6 @@ Roles run from `iac/ansible` against the IPs Terraform writes to `iac/address/`:
 
 - [ ] Terraform tests with [Terratest](https://terratest.gruntwork.io) or `terraform test`
 - [ ] Migrate kubeadm bootstrap to a managed option (EKS) as an alternative path
-- [ ] Renovate/Dependabot for GitHub Actions and provider version bumps
 - [ ] Per-module `terraform-docs` generated docs in CI
 
 ## 📄 License

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticPrefixFixDepsChoreOthers",
+    ":enableVulnerabilityAlertsWithLabel(security)"
+  ],
+  "onboarding": false,
+  "requireConfig": "required",
+  "enabledManagers": [
+    "ansible-galaxy",
+    "dockerfile",
+    "github-actions",
+    "helm-values",
+    "custom.regex",
+    "terraform"
+  ],
+  "dependencyDashboard": true,
+  "prCreation": "immediate",
+  "rebaseWhen": "conflicted",
+  "rangeStrategy": "bump",
+  "separateMajorMinor": true,
+  "separateMultipleMajor": true,
+  "commitMessagePrefix": "chore(deps):",
+  "commitMessageAction": "update",
+  "labels": ["dependencies", "renovate"],
+  "reviewersFromCodeOwners": true,
+  "packageRules": [
+    {
+      "description": "Keep dependency upgrades independently reviewable",
+      "matchUpdateTypes": ["major", "minor", "patch", "digest", "pinDigest"],
+      "groupName": null
+    },
+    {
+      "description": "Run the repository quality gate for dependency updates",
+      "matchManagers": [
+        "ansible-galaxy",
+        "dockerfile",
+        "github-actions",
+        "helm-values",
+        "custom.regex",
+        "terraform"
+      ],
+      "prBodyNotes": [
+        "Run `make validate` locally before merging."
+      ]
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update the Gateway API standard CRD release in Ansible defaults",
+      "managerFilePatterns": ["/^iac\/ansible\/roles\/k8s-features\/defaults\/main\\.yml$/"],
+      "matchStrings": [
+        "gateway-api/releases/download/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/standard-install\\.yaml"
+      ],
+      "depNameTemplate": "kubernetes-sigs/gateway-api",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Update Envoy Gateway Helm chart version",
+      "managerFilePatterns": ["/^iac\/ansible\/roles\/k8s-features\/defaults\/main\\.yml$/"],
+      "matchStrings": [
+        "envoy_gateway_chart_version: v(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+      ],
+      "depNameTemplate": "envoyproxy/gateway",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    }
+  ]
+}
