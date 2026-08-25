@@ -5,8 +5,6 @@
     ":semanticPrefixFixDepsChoreOthers",
     ":enableVulnerabilityAlertsWithLabel(security)"
   ],
-  "onboarding": false,
-  "requireConfig": "required",
   "enabledManagers": [
     "ansible-galaxy",
     "dockerfile",
