@@ -14,7 +14,7 @@ k8s_features_helm_repositories:
 envoy_gateway_namespace: envoy-gateway-system
 envoy_gateway_release_name: envoy-gateway
 envoy_gateway_chart: oci://docker.io/envoyproxy/gateway-helm
-envoy_gateway_chart_version: v1.2.0
+envoy_gateway_chart_version: v1.9.1
 
 # Gateway resource created after the controller is running.
 gateway_manifest_path: "{{ playbook_dir }}/../../k8s/gateway/gateway.yaml"
