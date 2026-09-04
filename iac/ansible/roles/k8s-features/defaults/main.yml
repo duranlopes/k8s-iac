@@ -2,7 +2,7 @@
 kubernetes_kubeconfig: /etc/kubernetes/admin.conf
 
 # Gateway API CRDs (standard channel).
-gateway_api_crd_url: https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.1/standard-install.yaml
+gateway_api_crd_url: https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.6.2/standard-install.yaml
 
 k8s_features_helm_repositories:
   - name: metrics-server
